@@ -8,7 +8,7 @@ using psol_admin_api.Models;
 
 namespace psol_admin_api.Controllers
 {
-    [Route("api/package")]
+    [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     public class PackageController : ControllerBase
     {
