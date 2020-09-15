@@ -45,9 +45,16 @@ namespace PsolAdminApi
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{country}/{controller=Home}/{action=Index}/{id?}");
+                //endpoints.MapControllerRoute(
+                //    name: "default",
+                //    pattern: "{country}/{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapAreaControllerRoute(
+                    name: "areas", "area",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}",
+                    defaults: new { controller = "Home", action = "Index" });
+
+                //endpoints.MapDefaultControllerRoute();
             });
 
             //app.UseEndpoints(endpoints =>

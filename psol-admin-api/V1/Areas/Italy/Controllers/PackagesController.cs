@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PsolAdminApi.V1.Italy.Controllers
+namespace PsolAdminApi.V1.Areas.Italy.Controllers
 {
+    [Area("Italy")]
+    [Route("Italy/[controller]/[action]")]
     //[Route("v{version:apiVersion}/{country}/[controller]")]
     [ApiController]
     public class PackagesController : ControllerBase
