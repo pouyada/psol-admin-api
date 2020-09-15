@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace psol_admin_api.Controllers
+namespace PsolAdminApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
