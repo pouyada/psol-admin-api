@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PsolAdminApi.Models;
+using PsolAdminApi.Areas.Core.Models;
 using PsolAdminApi.V1.Models;
 
-namespace PsolAdminApi.Controllers
+namespace PsolAdminApi.Areas.Core.Controllers
 {
-    [Route("v{version:apiVersion}/[controller]")]
+    [Area("core")]
+    [Route("[area]/[controller]")]
     [ApiController]
-    public class PackageController : ControllerBase
+    public class PackagesController : ControllerBase
     {
         // GET: api/Package
         [HttpGet]
-        public Task<List<PackageDTO>> Get()
+        public ActionResult<List<PackageDTO>> Get()
         {
-            var packageList = Packages();
-            return packageList;
+           // var packageList = Packages();
+            return Ok("Core Controller");
+                
             //return Enumerable.Range(0, 1).Select(index => new Package
             //{
             //    Name = "snb"

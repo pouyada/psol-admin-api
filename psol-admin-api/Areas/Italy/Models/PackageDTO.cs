@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace PsolAdminApi.Models
+
+namespace PsolAdminApi.Areas.Italy.Models
 {
     public class PackageDTO
     {
@@ -14,8 +12,7 @@ namespace PsolAdminApi.Models
         public Boolean Active { get; set; }
         public Boolean IsDefault { get; set; }
         public decimal Price { get; set; }
-        public decimal Vat { get; set; }
-        public DateTime LastModified { get; set; }
-        public DateTime InsertDate { get; set; }
+        public decimal IVA { get; set; }
+
     }
 }

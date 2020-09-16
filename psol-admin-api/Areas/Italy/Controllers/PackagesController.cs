@@ -1,22 +1,18 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using PsolAdminApi.Areas.Italy.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
-namespace PsolAdminApi.V1.Areas.Italy.Controllers
+namespace PsolAdminApi.Areas.Italy.Controllers
 {
-    [Area("Italy")]
-    [Route("Italy/[controller]/[action]")]
-    //[Route("v{version:apiVersion}/{country}/[controller]")]
+    [Area("italy")]
+    [Route("[area]/[controller]")]
     [ApiController]
     public class PackagesController : ControllerBase
     {
         [HttpGet]
-        public IActionResult Get()
+        public ActionResult<List<PackageDTO>> Get()
         {
-            return Ok();
+            return Ok("italian controller");
             //var packageList = Packages();
             //return packageList;
             //return Enumerable.Range(0, 1).Select(index => new Package
