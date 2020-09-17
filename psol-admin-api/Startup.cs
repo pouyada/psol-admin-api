@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PsolAdminApi.V1.Models;
 
 namespace PsolAdminApi
 {
@@ -19,6 +20,7 @@ namespace PsolAdminApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddTransient<Service>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

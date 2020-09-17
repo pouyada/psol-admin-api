@@ -17,6 +17,13 @@ namespace PsolAdminApi.V1.Models
         private HttpResponseMessage Response;
         private string ApiResponse;
 
+        public Service()
+        {
+            RequestUri = "http://localhost:21111/api/GatewayController/Execute";            
+            Client = new HttpClient();
+            ApiResponse = null;
+        }
+
         public Service(string method) 
         {
             RequestUri = "http://localhost:21111/api/GatewayController/Execute";
@@ -24,6 +31,12 @@ namespace PsolAdminApi.V1.Models
             Client = new HttpClient();
             RequestMessage = new HttpRequestMessage(new HttpMethod(Method), RequestUri);
             ApiResponse = null;
+        }
+
+        public void SetMethodCall(string method)
+        {
+            Method = method;
+            RequestMessage = new HttpRequestMessage(new HttpMethod(Method), RequestUri);
         }
 
         public void SetRequestMessage (ExecuteGateway gatewayExecute)

@@ -15,6 +15,11 @@ namespace PsolAdminApi.Areas.Core.Controllers
     [ApiController]
     public class PackagesController : ControllerBase
     {
+        private readonly Service _service;
+        public PackagesController(Service service)
+        {
+            _service = service;
+        }
         // GET: api/Package
         [HttpGet]
         public ActionResult<List<PackageDTO>> Get()
@@ -61,10 +66,17 @@ namespace PsolAdminApi.Areas.Core.Controllers
 
         // Post: api/Package
         [HttpPost]
-        public string Post([FromBody]IdPackageDTO idPackage)
+        public ActionResult Post([FromBody]IdPackageDTO idPackage)
         {
-            var packageList = GetPackageById(idPackage);
-            return packageList;
+            try
+            {
+                var packageList = GetPackageById(idPackage);
+                return Ok(packageList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         public string GetPackageById(IdPackageDTO idPackage)
@@ -78,9 +90,9 @@ namespace PsolAdminApi.Areas.Core.Controllers
             gatewayExecute.Token = string.Empty;
             gatewayExecute.JsonInput = (JObject)JToken.FromObject(idPackage);
 
-            var service = new Service("POST");
-            service.SetRequestMessage(gatewayExecute);
-            apiResponse = service.GetResponseMessage();
+            _service.SetMethodCall("POST");         
+            _service.SetRequestMessage(gatewayExecute);
+            apiResponse = _service.GetResponseMessage();
             return apiResponse;          
         }
 
