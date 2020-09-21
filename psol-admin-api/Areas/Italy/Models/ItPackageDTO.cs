@@ -3,7 +3,7 @@
 
 namespace PsolAdminApi.Areas.Italy.Models
 {
-    public class PackageDTO
+    public class ItPackageDTO
     {
         public long Id { get; set; }
         public string PackageName { get; set; }

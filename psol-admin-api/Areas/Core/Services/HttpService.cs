@@ -1,14 +1,12 @@
 ﻿using Newtonsoft.Json;
+using PsolAdminApi.V1.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace PsolAdminApi.V1.Models
+namespace PsolAdminApi.Areas.Core.Services
 {
-    public class Service
+    public class HttpService
     {
         private string RequestUri;
         private string Method;
@@ -17,14 +15,14 @@ namespace PsolAdminApi.V1.Models
         private HttpResponseMessage Response;
         private string ApiResponse;
 
-        public Service()
+        public HttpService()
         {
             RequestUri = "http://localhost:21111/api/GatewayController/Execute";            
             Client = new HttpClient();
             ApiResponse = null;
         }
 
-        public Service(string method) 
+        public HttpService(string method) 
         {
             RequestUri = "http://localhost:21111/api/GatewayController/Execute";
             Method = method;
@@ -33,13 +31,13 @@ namespace PsolAdminApi.V1.Models
             ApiResponse = null;
         }
 
-        public void SetMethodCall(string method)
+        public void SetMethod(string method)
         {
             Method = method;
             RequestMessage = new HttpRequestMessage(new HttpMethod(Method), RequestUri);
         }
 
-        public void SetRequestMessage (ExecuteGateway gatewayExecute)
+        public void SetRequestMessage (GatewayRequestModel gatewayExecute)
         {
             var json = JsonConvert.SerializeObject(gatewayExecute);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");

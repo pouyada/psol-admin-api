@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PsolAdminApi.Areas.Core.Models;
+using PsolAdminApi.Areas.Core.Services;
 using PsolAdminApi.V1.Models;
 
 namespace PsolAdminApi.Areas.Core.Controllers
@@ -15,18 +16,22 @@ namespace PsolAdminApi.Areas.Core.Controllers
     [ApiController]
     public class PackagesController : ControllerBase
     {
-        private readonly Service _service;
-        public PackagesController(Service service)
+        private readonly HttpService _httpService;
+        private readonly string _country;
+
+        public PackagesController(HttpService httpService, UtilService utilService)
         {
-            _service = service;
+            _httpService = httpService;
+            _country = utilService.GetCountryFromRequest();
         }
+
         // GET: api/Package
         [HttpGet]
         public ActionResult<List<PackageDTO>> Get()
         {
-           // var packageList = Packages();
+            // var packageList = Packages();
             return Ok("Core Controller");
-                
+
             //return Enumerable.Range(0, 1).Select(index => new Package
             //{
             //    Name = "snb"
@@ -34,6 +39,7 @@ namespace PsolAdminApi.Areas.Core.Controllers
             //.ToArray();
         }
 
+        [NonAction]
         public async Task<List<PackageDTO>> Packages()
         {
             string apiResponse = null;
@@ -79,20 +85,16 @@ namespace PsolAdminApi.Areas.Core.Controllers
             }
         }
 
+        [NonAction]
         public string GetPackageById(IdPackageDTO idPackage)
         {
             string apiResponse = null;
             List<PackageDTO> packageList = new List<PackageDTO>();
-            var gatewayExecute = new ExecuteGateway();
-            gatewayExecute.NomeComponente = "Package";
-            gatewayExecute.NomeOperazione = "GetPkgPackageById";
-            gatewayExecute.Country = "Germany";
-            gatewayExecute.Token = string.Empty;
-            gatewayExecute.JsonInput = (JObject)JToken.FromObject(idPackage);
+            var gatewayExecute = new GatewayRequestModel("Package", "GetPkgPackageById", _country, (JObject)JToken.FromObject(idPackage));
 
-            _service.SetMethodCall("POST");         
-            _service.SetRequestMessage(gatewayExecute);
-            apiResponse = _service.GetResponseMessage();
+            _httpService.SetMethod("POST");         
+            _httpService.SetRequestMessage(gatewayExecute);
+            apiResponse = _httpService.GetResponseMessage();
             return apiResponse;          
         }
 

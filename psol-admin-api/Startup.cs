@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PsolAdminApi.Areas.Core.Middleware;
+using PsolAdminApi.Areas.Core.Services;
 using PsolAdminApi.V1.Models;
 
 namespace PsolAdminApi
@@ -20,7 +22,10 @@ namespace PsolAdminApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddTransient<Service>();
+            services.AddTransient<HttpService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<UtilService>();
+            services.AddSwaggerGen();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -30,7 +35,16 @@ namespace PsolAdminApi
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMiddleware<CountryMiddleware>();
+
             app.UsePathBase("/api");
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "psol-admin-api");
+            });
 
             app.UseHttpsRedirection();
 

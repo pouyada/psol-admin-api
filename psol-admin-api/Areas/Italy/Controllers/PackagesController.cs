@@ -10,7 +10,7 @@ namespace PsolAdminApi.Areas.Italy.Controllers
     public class PackagesController : ControllerBase
     {
         [HttpGet]
-        public ActionResult<List<PackageDTO>> Get()
+        public ActionResult<List<ItPackageDTO>> Get()
         {
             return Ok("italian controller");
             //var packageList = Packages();
