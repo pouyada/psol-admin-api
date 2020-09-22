@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PsolAdminApi.Areas.Core.Models;
 using PsolAdminApi.Areas.Core.Services;
-using PsolAdminApi.V1.Models;
 
 namespace PsolAdminApi.Areas.Core.Controllers
 {
@@ -16,68 +14,29 @@ namespace PsolAdminApi.Areas.Core.Controllers
     [ApiController]
     public class PackagesController : ControllerBase
     {
-        private readonly HttpService _httpService;
-        private readonly string _country;
+        private readonly GatewayService _httpService;
 
-        public PackagesController(HttpService httpService, UtilService utilService)
+        public PackagesController(GatewayService httpService, UtilService utilService)
         {
             _httpService = httpService;
-            _country = utilService.GetCountryFromRequest();
         }
 
         // GET: api/Package
         [HttpGet]
-        public ActionResult<List<PackageDTO>> Get()
+        public async Task<ActionResult<List<PackageDTO>>> Get()
         {
-            // var packageList = Packages();
-            return Ok("Core Controller");
-
-            //return Enumerable.Range(0, 1).Select(index => new Package
-            //{
-            //    Name = "snb"
-            //})
-            //.ToArray();
+            var packages = await GetAllPackages();
+            return Ok(packages);
         }
 
-        [NonAction]
-        public async Task<List<PackageDTO>> Packages()
-        {
-            string apiResponse = null;
-            List<PackageDTO> packageList = new List<PackageDTO>();
-            using (var httpClient = new HttpClient())
-            {
-                //httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer PSolDeApp01");
-                //httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-                //httpClient.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.26.3");
-                //httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
-                //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
-                //httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-                //httpClient.DefaultRequestHeaders.Add("RootOrg", "PSOLDE");
-                //httpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
-                try
-                {
-                    using (var response = await httpClient.GetAsync("http://localhost:21111/psol/1.0/services"))
-                    {
-                        apiResponse = await response.Content.ReadAsStringAsync();
-                        packageList = JsonConvert.DeserializeObject<List<PackageDTO>>(apiResponse);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            return packageList;
-        }
 
         // Post: api/Package
         [HttpPost]
-        public ActionResult Post([FromBody]IdPackageDTO idPackage)
+        public ActionResult Post([FromBody]string idPackage)
         {
             try
             {
-                var packageList = GetPackageById(idPackage);
-                return Ok(packageList);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -85,31 +44,15 @@ namespace PsolAdminApi.Areas.Core.Controllers
             }
         }
 
-        [NonAction]
-        public string GetPackageById(IdPackageDTO idPackage)
-        {
-            string apiResponse = null;
-            List<PackageDTO> packageList = new List<PackageDTO>();
-            var gatewayExecute = new GatewayRequestModel("Package", "GetPkgPackageById", _country, (JObject)JToken.FromObject(idPackage));
-
-            _httpService.SetMethod("POST");         
-            _httpService.SetRequestMessage(gatewayExecute);
-            apiResponse = _httpService.GetResponseMessage();
-            return apiResponse;          
-        }
 
         // GET: api/Package/5
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public async Task<ActionResult<PackageDTO>> Get(int id)
         {
-            return "value";
+            var package = await GetPackageById(id);
+            return Ok(package);
         }
 
-        //// POST: api/Package
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
 
         // PUT: api/Package/5
         [HttpPut("{id}")]
@@ -121,6 +64,33 @@ namespace PsolAdminApi.Areas.Core.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        [NonAction]
+        public async Task<PackageDTO> GetPackageById(int packageId)
+        {
+            JObject requestData = new JObject();
+            requestData.Add ("idP", packageId);
+
+            var gatewayRequestModel = new GatewayRequestModel("Package", "GetPkgPackageById", requestData);
+            gatewayRequestModel.DataField = "packagesP";
+            JObject apiResponse = await _httpService.Send(gatewayRequestModel);
+
+            return JsonConvert.DeserializeObject<PackageDTO>(apiResponse.ToString());
+        }
+
+        [NonAction]
+        public async Task<List<PackageDTO>> GetAllPackages()
+        {
+            //JObject requestData = new JObject();
+            //requestData.Add("idP", packageId);
+
+            var gatewayRequestModel = new GatewayRequestModel("Package", "GetPkgPackages", null);
+            gatewayRequestModel.DataField = "packagesP";
+            gatewayRequestModel.FetchEntity = false;
+            JObject apiResponse = await _httpService.Send(gatewayRequestModel);
+
+            return JsonConvert.DeserializeObject<List<PackageDTO>>(apiResponse["data"].ToString());
         }
     }
 }

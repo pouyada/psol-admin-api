@@ -1,27 +1,33 @@
 ﻿using Newtonsoft.Json.Linq;
-using PsolAdminApi.Areas.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace PsolAdminApi.V1.Models
+namespace PsolAdminApi.Areas.Core.Models
 {
     public class GatewayRequestModel
     {
         public string NomeComponente;
         public string NomeOperazione;
-        public string Country;
         public string Token;
         public JObject JsonInput;
+        public string Country { get; set; }
 
-        public GatewayRequestModel(string component, string operation, string country, JObject requestData, UtilService utilService)
+        /// <summary>
+        /// Used to determine the main key of response's body object. this is because each gateway method has a different key
+        /// </summary>
+        public string DataField { get; set; }
+
+        /// <summary>
+        /// Used to determine if the gateway request must return a single entity or a collection
+        /// Default = true
+        /// </summary>
+        public bool FetchEntity { get; set; }
+
+        public GatewayRequestModel(string component, string operation, JObject requestData)
         {
             NomeComponente = component;
             NomeOperazione = operation;
-            Country = utilService.GetCountryFromRequest();
             Token = string.Empty;
             JsonInput = requestData;
+            FetchEntity = true;
         }
 
     }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PsolAdminApi.V1.Models
+namespace PsolAdminApi.Areas.Core.Services
 {
-    public class IdPackageDTO
+    public class PackageService<PackageDto>
     {
-        public long idP { get; set; }
+
     }
 }

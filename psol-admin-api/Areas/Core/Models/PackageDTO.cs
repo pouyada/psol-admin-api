@@ -15,6 +15,7 @@ namespace PsolAdminApi.Areas.Core.Models
         public Boolean IsDefault { get; set; }
         public decimal Price { get; set; }
         public decimal Vat { get; set; }
-       
     }
+
+    
 }
