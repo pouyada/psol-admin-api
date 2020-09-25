@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PsolAdminApi.Areas.Core.Middleware;
+using PsolAdminApi.Areas.Core.Options;
 using PsolAdminApi.Areas.Core.Services;
 using System;
 using System.Net.Http.Headers;
@@ -16,6 +17,7 @@ namespace PsolAdminApi
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            
         }
 
         public IConfiguration Configuration { get; }
@@ -25,12 +27,14 @@ namespace PsolAdminApi
             services.AddControllers();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<UtilService>();
+            services.AddSingleton(Configuration);
             services.AddSwaggerGen();
+            services.Configure<EnvSettings>(Configuration.GetSection("EnvSettings"));
 
             services.AddHttpClient<GatewayService>(c =>
             {
                 // TODO : get the url from ENV based on the country. maybe this url config must be moved to GatewayService
-                c.BaseAddress = new Uri("http://localhost:21111/");
+                c.BaseAddress = new Uri(Configuration.GetSection("EnvSettings").GetValue<string>("GATEWAY_BASE_URL"));               
                 c.DefaultRequestHeaders.Accept.Clear();
                 c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });

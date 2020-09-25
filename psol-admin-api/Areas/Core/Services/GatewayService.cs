@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PsolAdminApi.Areas.Core.Models;
+using PsolAdminApi.Areas.Core.Options;
 using PsolAdminApi.Areas.Core.Utility;
 using System.IO;
 using System.Net.Http;
@@ -15,7 +18,7 @@ namespace PsolAdminApi.Areas.Core.Services
     {
         private string _country;
         private readonly HttpClient _httpClient;
-        private string apiPath = "api/GatewayController/Execute";
+        private string apiPath;
 
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -23,10 +26,11 @@ namespace PsolAdminApi.Areas.Core.Services
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        public GatewayService(UtilService utilService, HttpClient client)
+        public GatewayService(UtilService utilService, HttpClient client, IOptions<EnvSettings> env)
         {
             _httpClient = client;
             _country = utilService.GetCountryFromRequest();
+            apiPath = env.Value.GATEWAY_API_PATH;
         }
 
         public async Task<JObject> Send(GatewayRequestModel requestModel)
