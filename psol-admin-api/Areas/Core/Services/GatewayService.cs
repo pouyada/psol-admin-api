@@ -78,28 +78,38 @@ namespace PsolAdminApi.Areas.Core.Services
 
         public async Task<LoginGatewayResponseModel> SendAuthRequest(LoginGatewayRequestModel requestModel)
         {
-            var loginGatewayResponseModel = new LoginGatewayResponseModel();
+            var loginResponseModel = new LoginGatewayResponseModel();
+            loginResponseModel.Success = false;
 
             var httpContent = ConvertToStringContent(requestModel);
 
             var response = await _httpClient.PostAsync(authPath, httpContent);
             var stream = await response.Content.ReadAsStreamAsync();
 
-            var responseObject = DeserializeJsonFromStream<JObject>(stream);
-
-            if (responseObject["Result"] == 2)
-
             if (!response.IsSuccessStatusCode)
             {
                 //write in logs
-                loginGatewayResponseModel.Success = false;
-                return loginGatewayResponseModel;
+                return loginResponseModel;
             }
 
-            var responseContent = DeserializeJsonFromStream<LoginGatewayResponseModel>(stream);
-            loginGatewayResponseModel.Success = true;
+            var responseObject = DeserializeJsonFromStream<JObject>(stream);
+            var resultCode = (int?)responseObject.SelectToken("Result");
 
-            return responseContent;
+            if (resultCode == 2 || resultCode == 5)
+            {
+                loginResponseModel.Message = responseObject.SelectToken("Message").ToString();
+                return loginResponseModel;
+            }
+
+            var userInfo = responseObject.SelectToken("UserInfo");
+            loginResponseModel.Success = true;
+            loginResponseModel.Username = userInfo.SelectToken("Username").ToString();
+            loginResponseModel.Roles = userInfo.SelectToken("Roles").Values<string>();
+            loginResponseModel.FirstName = userInfo.SelectToken("UserData").SelectToken("Name").ToString();
+            loginResponseModel.LastName = userInfo.SelectToken("UserData").SelectToken("Surname").ToString(); ;
+            loginResponseModel.Email = userInfo.SelectToken("UserData").SelectToken("Email").ToString(); ;
+
+            return loginResponseModel;
         }
 
         private static async void CheckRequestStatus(HttpResponseMessage response, Stream stream)

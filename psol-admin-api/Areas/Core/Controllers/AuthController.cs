@@ -18,11 +18,11 @@ namespace PsolAdminApi.Areas.Core.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly GatewayService _httpService;
+        private readonly GatewayService _gatewayService;
 
         public AuthController(GatewayService httpService)
         {
-            _httpService = httpService;
+            _gatewayService = httpService;
         }
 
         [HttpPost]
@@ -31,20 +31,12 @@ namespace PsolAdminApi.Areas.Core.Controllers
         {
             var authResponse = await LoginAsync(request);
 
-            //if (!authResponse.Success)
-            //{
-            //    return BadRequest(new AuthFailedResponse
-            //    {
-            //        Errors = authResponse.Errors
-            //    });
-            //}
+            if (!authResponse.Success)
+            {
+                return Unauthorized();
+            }
 
-            //return Ok(new AuthSuccessResponse
-            //{
-            //    Token = authResponse.Token,
-            //    RefreshToken = authResponse.RefreshToken
-            //});
-            return Ok();
+            return Ok(authResponse);
         }
 
         [NonAction]
@@ -56,9 +48,9 @@ namespace PsolAdminApi.Areas.Core.Controllers
             loginGatewayRequestModel.Username = request.Username;
             loginGatewayRequestModel.Password = request.Password;
 
-            JObject apiResponse = await _httpService.SendAuthRequest(loginGatewayRequestModel);
+            LoginGatewayResponseModel apiResponse = await _gatewayService.SendAuthRequest(loginGatewayRequestModel);
 
-            return JsonConvert.DeserializeObject<LoginGatewayResponseModel>(apiResponse.ToString());
+            return apiResponse;
         }
     }
 }
