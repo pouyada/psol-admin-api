@@ -9,5 +9,7 @@ namespace PsolAdminApi.Areas.Core.Options
     {
         public string GATEWAY_BASE_URL { get; set; }
         public string GATEWAY_API_PATH { get; set; }
+        public string GATEWAY_AUTH_PATH { get; set; }
+
     }
 }

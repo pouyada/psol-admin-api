@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PsolAdminApi.Areas.Core.Models;
+using PsolAdminApi.Areas.Core.Models.Request;
+using PsolAdminApi.Areas.Core.Models.Response;
 using PsolAdminApi.Areas.Core.Options;
 using PsolAdminApi.Areas.Core.Utility;
 using System.IO;
@@ -19,6 +22,7 @@ namespace PsolAdminApi.Areas.Core.Services
         private string _country;
         private readonly HttpClient _httpClient;
         private string apiPath;
+        private string authPath;
 
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -31,6 +35,7 @@ namespace PsolAdminApi.Areas.Core.Services
             _httpClient = client;
             _country = utilService.GetCountryFromRequest();
             apiPath = env.Value.GATEWAY_API_PATH;
+            authPath = env.Value.GATEWAY_AUTH_PATH;
         }
 
         public async Task<JObject> Send(GatewayRequestModel requestModel)
@@ -41,21 +46,12 @@ namespace PsolAdminApi.Areas.Core.Services
             // Add logs
 
             requestModel.Country = _country;
-            var jsonData = JsonConvert.SerializeObject(requestModel);
-            var httpContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            var httpContent = ConvertToStringContent(requestModel);
 
             var response = await _httpClient.PostAsync(apiPath, httpContent);
             var stream = await response.Content.ReadAsStreamAsync();
 
-            if (!response.IsSuccessStatusCode)
-            {
-                var content = await StreamToStringAsync(stream);
-                throw new ApiException
-                {
-                    StatusCode = (int)response.StatusCode,
-                    Content = content
-                };
-            }
+            CheckRequestStatus(response, stream);
 
             var responseContent = DeserializeJsonFromStream<JObject>(stream);
 
@@ -78,6 +74,51 @@ namespace PsolAdminApi.Areas.Core.Services
             }
 
             return responseContent;
+        }
+
+        public async Task<LoginGatewayResponseModel> SendAuthRequest(LoginGatewayRequestModel requestModel)
+        {
+            var loginGatewayResponseModel = new LoginGatewayResponseModel();
+
+            var httpContent = ConvertToStringContent(requestModel);
+
+            var response = await _httpClient.PostAsync(authPath, httpContent);
+            var stream = await response.Content.ReadAsStreamAsync();
+
+            var responseObject = DeserializeJsonFromStream<JObject>(stream);
+
+            if (responseObject["Result"] == 2)
+
+            if (!response.IsSuccessStatusCode)
+            {
+                //write in logs
+                loginGatewayResponseModel.Success = false;
+                return loginGatewayResponseModel;
+            }
+
+            var responseContent = DeserializeJsonFromStream<LoginGatewayResponseModel>(stream);
+            loginGatewayResponseModel.Success = true;
+
+            return responseContent;
+        }
+
+        private static async void CheckRequestStatus(HttpResponseMessage response, Stream stream)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await StreamToStringAsync(stream);
+                throw new ApiException
+                {
+                    StatusCode = (int)response.StatusCode,
+                    Content = content
+                };
+            }
+        }
+        private static StringContent ConvertToStringContent<T>(T requestModel)
+        {
+            var jsonData = JsonConvert.SerializeObject(requestModel);
+            var httpContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            return httpContent;
         }
 
         private static T DeserializeJsonFromStream<T>(Stream stream)

@@ -1,14 +1,17 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using PsolAdminApi.Areas.Core.Middleware;
 using PsolAdminApi.Areas.Core.Options;
 using PsolAdminApi.Areas.Core.Services;
 using System;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace PsolAdminApi
 {
@@ -31,6 +34,28 @@ namespace PsolAdminApi
             services.AddSwaggerGen();
             services.Configure<EnvSettings>(Configuration.GetSection("EnvSettings"));
 
+            var jwtSettings = new JwtSettings();
+            Configuration.Bind(nameof(jwtSettings), jwtSettings);
+            services.AddSingleton(jwtSettings);
+
+            services.AddAuthentication(a =>
+            {
+                a.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                a.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                a.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(j => {
+                j.SaveToken = true;
+                j.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    RequireExpirationTime = false,
+                    ValidateLifetime = true
+                };
+            });
+
             services.AddHttpClient<GatewayService>(c =>
             {
                 // TODO : get the url from ENV based on the country. maybe this url config must be moved to GatewayService
@@ -52,6 +77,7 @@ namespace PsolAdminApi
 
             app.UsePathBase("/api");
 
+            app.UseAuthentication();
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>

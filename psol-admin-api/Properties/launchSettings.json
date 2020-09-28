@@ -14,6 +14,7 @@
       "launchBrowser": true,
       "launchUrl": "weatherforecast",
       "environmentVariables": {
+        "ENVSETTINGS__GATEWAY_AUTH_PATH": "api/AuthorizationController/Login",
         "ENVSETTINGS__GATEWAY_BASE_URL": "http://localhost:21111/",
         "ENVSETTINGS__GATEWAY_API_PATH": "api/GatewayController/Execute",
         "ASPNETCORE_ENVIRONMENT": "Development"
