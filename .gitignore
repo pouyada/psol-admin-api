@@ -1,1 +1,3 @@
-﻿ .vs/
+﻿/.vs
+/psol-admin-api/obj
+/psol-admin-api/bin

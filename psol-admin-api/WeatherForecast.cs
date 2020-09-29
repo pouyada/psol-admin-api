@@ -1,6 +1,6 @@
 using System;
 
-namespace psol_admin_api
+namespace PsolAdminApi
 {
     public class WeatherForecast
     {

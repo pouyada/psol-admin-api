@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "276d21da-0147-41ce-8389-90f15374e6f6",
+		"name": "PSOL-ADMIN-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Generate Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Country",
+								"value": "DE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{psol-admin-api-uri}}/core/packages",
+							"host": [
+								"{{psol-admin-api-uri}}"
+							],
+							"path": [
+								"core",
+								"packages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Country",
+								"value": "DE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{psol-admin-api-uri}}/core/packages",
+							"host": [
+								"{{psol-admin-api-uri}}"
+							],
+							"path": [
+								"core",
+								"packages"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Packages",
+			"item": [
+				{
+					"name": "Get Packges",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Country",
+								"value": "DE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{psol-admin-api-uri}}/core/packages",
+							"host": [
+								"{{psol-admin-api-uri}}"
+							],
+							"path": [
+								"core",
+								"packages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Packge By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Country",
+								"value": "DE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{psol-admin-api-uri}}/core/packages/48",
+							"host": [
+								"{{psol-admin-api-uri}}"
+							],
+							"path": [
+								"core",
+								"packages",
+								"48"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
